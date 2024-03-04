@@ -181,6 +181,7 @@ class Stm32Loader:
 
     def read_device_id(self):
         """Show chip ID and bootloader version."""
+        bootOk = False
         boot_version = self.stm32.get()
         self.debug(0, "Bootloader version: 0x%X" % boot_version)
         device_id = self.stm32.get_id()
@@ -198,6 +199,10 @@ class Stm32Loader:
         self.debug(
             0, "Chip id: 0x%X (%s)" % (device_id, bootloader.CHIP_IDS.get(device_id, "Unknown"))
         )
+        if "STM32F2" in bootloader.CHIP_IDS.get(device_id, "Unknown"):
+            bootOk =  True
+        return bootOk
+
 
     def read_device_uid(self):
         """Show chip UID and flash size."""
