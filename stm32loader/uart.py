@@ -27,6 +27,7 @@ Offer support for toggling RESET and BOOT0.
 
 
 import serial
+from pyftdi import serialext
 
 
 class SerialConnection:
@@ -124,3 +125,37 @@ class SerialConnection:
     def flush_imput_buffer(self):
         """Flush the input buffer to remove any stale read data."""
         self.serial_connection.reset_input_buffer()
+
+class FtdiSerialConnection(SerialConnection):
+    def __init__(self, serial_url, baud_rate=115200, parity="E"):
+        """Construct a SerialConnection (not yet connected)."""
+        self.serial_url = serial_url
+        self.baud_rate = baud_rate
+        self.parity = parity
+
+        self.swap_rts_dtr = False
+        self.reset_active_high = False
+        self.boot0_active_low = False
+
+        # don't connect yet; caller should use connect() separately
+        self.serial_connection = None
+
+        self._timeout = 5
+
+    def connect(self):
+        """Connect to the UART serial port."""
+        self.serial_connection = serialext.serial_for_url(
+            url=self.serial_url,
+            baudrate=self.baud_rate,
+            # number of write_data bits
+            bytesize=8,
+            parity=self.parity,
+            stopbits=1,
+            # don't enable software flow control
+            xonxoff=False,
+            # don't enable RTS/CTS flow control
+            rtscts=False,
+            # set a timeout value, None for waiting forever
+            timeout=self._timeout,
+        )
+

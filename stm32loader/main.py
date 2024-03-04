@@ -33,7 +33,7 @@ except ImportError:
 from stm32loader import args
 from stm32loader import hexfile
 from stm32loader import bootloader
-from stm32loader.uart import SerialConnection
+from stm32loader.uart import FtdiSerialConnection
 
 
 class Stm32Loader:
@@ -61,7 +61,7 @@ class Stm32Loader:
 
     def connect(self):
         """Connect to the bootloader UART over an RS-232 serial port."""
-        serial_connection = SerialConnection(
+        serial_connection = FtdiSerialConnection(
             self.configuration.port, self.configuration.baud, self.configuration.parity
         )
         self.debug(
